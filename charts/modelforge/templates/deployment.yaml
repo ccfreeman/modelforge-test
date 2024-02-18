@@ -1,0 +1,73 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Values.serviceName }}
+  labels:
+{{ include "mychart.labels" . | indent 4 }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.serviceName }}
+  template:
+    metadata:
+      labels:
+{{ include "mychart.labels" . | indent 8 }}
+    spec:
+      tolerations:
+        - key: Reserved
+          operator: Equal
+          value: MTier01
+          effect: NoSchedule
+      nodeSelector:
+        Reserved: MTier01
+      containers:
+      - name: {{ .Values.serviceName }}-container
+        image: {{ .Values.image }}
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: {{ .Values.cpuRequest }}
+            memory: {{ .Values.memoryRequest }}
+          limits:
+            cpu: {{ .Values.cpuLimit }}
+            memory: {{ .Values.memoryLimit }}
+        env:
+          - name: MODELFORGE__SERVICEBUS_CONN_STR
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.namespace }}-secrets
+                key: sb--connection-string
+          - name: MODELFORGE__APP_HOST
+            value: "0.0.0.0"
+          - name: MODELFORGE__APP_PORT
+            value: "{{ .Values.servicePort }}"
+          - name: MODELFORGE__SERVICEBUS_RECV_QUEUE
+            value: {{ .Values.serviceName }}
+          - name: MODELFORGE__MODEL_NAME
+            value: {{ .Values.serviceName }}
+          - name: MODELFORGE__MODEL_VERSION
+            value: "{{ .Chart.AppVersion }}"
+          - name: MODELFORGE__SERVICEBUS_PREFETCH_COUNT
+            value: "{{ .Values.servicebusPrefetchCount }}"
+        ports:
+        - containerPort: {{ .Values.servicePort }}
+        startupProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.servicePort }}
+          initialDelaySeconds: 0
+          failureThreshold: 36
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: {{ .Values.servicePort }}
+          failureThreshold: 3
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health/ready
+            port: {{ .Values.servicePort }}
+          failureThreshold: 5
+          periodSeconds: 5

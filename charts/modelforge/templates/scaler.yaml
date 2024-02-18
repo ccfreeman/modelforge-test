@@ -1,0 +1,29 @@
+# Scaler object for the seasonality naive model
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ .Values.serviceName }}-scaledobject
+  namespace: {{ .Values.namespace }}
+spec:
+  scaleTargetRef:
+    name: {{ .Values.serviceName }}
+  pollingInterval: 3
+  minReplicaCount: {{ .Values.minReplicaCount }}
+  maxReplicaCount: {{ .Values.maxReplicaCount }}
+  cooldownPeriod: 60
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 300
+          policies:
+          - type: Pods
+            value: 1
+            periodSeconds: 120
+  triggers:
+  - type: azure-servicebus
+    metadata:
+      queueName: "{{ .Values.serviceName }}"
+      messageCount: "{{ .Values.autoscaleMessageCount }}"
+    authenticationRef:
+      name: {{ .Values.namespace }}-trigger-auth
