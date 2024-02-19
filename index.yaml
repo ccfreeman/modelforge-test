@@ -3,6 +3,16 @@ entries:
   modelforge:
   - apiVersion: v2
     appVersion: 0.0.0
+    created: "2024-02-19T23:07:15.290293205Z"
+    description: A Helm chart for Kubernetes
+    digest: 3e8386437117ddbfec3da2ddc4402f236cc1c3a50305de1c35a831d59a4a8712
+    name: modelforge
+    type: application
+    urls:
+    - https://github.com/ccfreeman/modelforge-test/releases/download/modelforge-0.0.2/modelforge-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 0.0.0
     created: "2024-02-18T15:50:06.154782-06:00"
     description: A Helm chart for Kubernetes
     digest: d6f229be5ee5f9eb41d7cd4d0e3406e93db7927b6f46c1b374f63f738e7435f2
@@ -11,4 +21,4 @@ entries:
     urls:
     - modelforge-0.0.1.tgz
     version: 0.0.1
-generated: "2024-02-18T15:50:06.154356-06:00"
+generated: "2024-02-19T23:07:15.290350963Z"
