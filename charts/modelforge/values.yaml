@@ -1,5 +1,7 @@
 # serviceName is the name of the service
 serviceName:
+# appVersion represents the version of the application deployed by the chart
+appVersion: 0.0.0
 
 # namespace the kubernetes namespace to deploy the chart to; this should usually be the modelforge namespace
 namespace: "datvlcn"

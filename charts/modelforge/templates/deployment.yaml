@@ -47,7 +47,7 @@ spec:
           - name: MODELFORGE__MODEL_NAME
             value: {{ .Values.serviceName }}
           - name: MODELFORGE__MODEL_VERSION
-            value: "{{ .Chart.AppVersion }}"
+            value: "{{ .Values.appVersion }}"
           - name: MODELFORGE__SERVICEBUS_PREFETCH_COUNT
             value: "{{ .Values.servicebusPrefetchCount }}"
         ports:
