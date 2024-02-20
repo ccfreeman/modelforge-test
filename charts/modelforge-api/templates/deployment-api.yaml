@@ -1,9 +1,9 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: {{ .Values.serviceName }}
+  name: {{ .Values.serviceName }}-deployment
   labels:
-{{ include "modelforge.labels" . | indent 4 }}
+{{ include "modelforge-api.labels" . | indent 4 }}
   namespace: {{ .Values.namespace }}
 spec:
   selector:
@@ -11,8 +11,13 @@ spec:
       app.kubernetes.io/name: {{ .Values.serviceName }}
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/scheme: "http"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "{{ .Values.servicePort }}"
       labels:
-{{ include "modelforge.labels" . | indent 8 }}
+{{ include "modelforge-api.labels" . | indent 8 }}
     spec:
       tolerations:
         - key: Reserved
@@ -22,9 +27,21 @@ spec:
       nodeSelector:
         Reserved: MTier01
       containers:
-      - name: {{ .Values.serviceName }}-container
-        image: {{ .Values.image }}
+      - name: {{ .Values.serviceName }}
+        image: {{ .Values.image }} 
         imagePullPolicy: IfNotPresent
+        command:
+          - "uvicorn"
+          - {{ .Values.appPath }}
+          - "--port"
+          - "{{ .Values.servicePort }}"
+          - "--host"
+          - "0.0.0.0"
+          - "--log-level"
+          - "warning"
+          - "--loop"
+          - "uvloop"
+          - "--no-server-header"
         resources:
           requests:
             cpu: {{ .Values.cpuRequest }}
@@ -33,23 +50,15 @@ spec:
             cpu: {{ .Values.cpuLimit }}
             memory: {{ .Values.memoryLimit }}
         env:
-          - name: MODELFORGE__SERVICEBUS_CONN_STR
+          - name: SERVICEBUS_CONN_STR
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.namespace }}-secrets
                 key: sb--connection-string
-          - name: MODELFORGE__APP_HOST
-            value: "0.0.0.0"
-          - name: MODELFORGE__APP_PORT
-            value: "{{ .Values.servicePort }}"
-          - name: MODELFORGE__SERVICEBUS_RECV_QUEUE
-            value: {{ .Values.serviceName }}
-          - name: MODELFORGE__APP_NAME
-            value: {{ .Values.serviceName }}
-          - name: MODELFORGE__APP_VERSION
-            value: "{{ .Values.appVersion }}"
-          - name: MODELFORGE__SERVICEBUS_PREFETCH_COUNT
-            value: "{{ .Values.servicebusPrefetchCount }}"
+          - name: RECEIVE_QUEUE_NAME
+            value: response-queue
+          - name: SERVICEBUS_PREFETCH_COUNT
+            value: "50"
         ports:
         - containerPort: {{ .Values.servicePort }}
         startupProbe:
@@ -71,3 +80,17 @@ spec:
             port: {{ .Values.servicePort }}
           failureThreshold: 5
           periodSeconds: 5
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.serviceName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+  - name: http
+    targetPort: {{ .Values.servicePort }}
+    port: {{ .Values.servicePortShort }}
+  selector:
+{{ include "modelforge-api.labels" . | indent 4 }}
+    
