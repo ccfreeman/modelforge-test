@@ -44,9 +44,9 @@ spec:
             value: "{{ .Values.servicePort }}"
           - name: MODELFORGE__SERVICEBUS_RECV_QUEUE
             value: {{ .Values.serviceName }}
-          - name: MODELFORGE__MODEL_NAME
+          - name: MODELFORGE__APP_NAME
             value: {{ .Values.serviceName }}
-          - name: MODELFORGE__MODEL_VERSION
+          - name: MODELFORGE__APP_VERSION
             value: "{{ .Values.appVersion }}"
           - name: MODELFORGE__SERVICEBUS_PREFETCH_COUNT
             value: "{{ .Values.servicebusPrefetchCount }}"
