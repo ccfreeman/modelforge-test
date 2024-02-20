@@ -1,0 +1,59 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ .Values.serviceName }}-ingress
+  labels:
+{{ include "modelforge-api.labels" . | indent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  namespace: {{ .Values.namespace }}
+spec:
+  tls:
+  {{- if eq .Values.env "prd" }}
+  - hosts: 
+    - {{ printf "ingress.coyote.com" }}
+  {{- end }}
+  {{- if eq .Values.env "stg" }}
+  - hosts: 
+    - {{ printf "ingress-test.coyote.com" }}
+  {{- end }}
+  {{- if eq .Values.env "fsl" }}
+  - hosts: 
+    - {{ printf "ingress-fast.coyote.com" }}
+  {{- end }}
+  {{- if eq .Values.env "qa" }}
+  - hosts: 
+    - {{ printf "ingress-qa.coyote.com" }}
+  {{- end }}
+  {{- if eq .Values.env "dmo" }}
+  - hosts: 
+    - {{ printf "ingress-demo.coyote.com" }}
+  {{- end }}
+    secretName: {{ .Values.namespace }}-tls-secret
+  rules:
+  {{- if eq .Values.env "prd" }}
+  - host: {{ printf "ingress.coyote.com" }}
+  {{- end }}
+  {{- if eq .Values.env "stg" }}
+  - host: {{ printf "ingress-test.coyote.com" }}
+  {{- end }}
+  {{- if eq .Values.env "fsl" }}
+  - host: {{ printf "ingress-fast.coyote.com" }}
+  {{- end }}
+  {{- if eq .Values.env "qa" }}
+  - host: {{ printf "ingress-qa.coyote.com" }}
+  {{- end }}
+  {{- if eq .Values.env "dmo" }}
+  - host: {{ printf "ingress-demo.coyote.com" }}
+  {{- end }}
+    http:
+      paths:
+      - path: /{{ .Values.ingressPath }}(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.serviceName }}
+            port:
+              number: {{ .Values.servicePortShort }}

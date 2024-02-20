@@ -4,7 +4,10 @@ serviceName:
 appVersion: "0.0.0"
 
 # namespace the kubernetes namespace to deploy the chart to; this should usually be the modelforge namespace
-namespace: "datvlcn"
+namespace:
+
+# appPath supplies the argument passed to the uvicorn server worker on the image entrypoint
+appPath: "app.main:app"
 
 # env is the environment the service is being deployed to; this should be one of 'qa', 'fsl', 'prd', or 'stg'
 env: "qa"
@@ -12,8 +15,13 @@ env: "qa"
 # image is the container image to deploy
 image:
 
+# ingressPath is the path for the ingress
+ingressPath: "modelforge"
+
 # servicePort is the service port for the webserver; for message-based services, this is the port for the health check
 servicePort: 8000
+# servicePortShort is the short service port for the webserver; for message-based services
+servicePortShort: 80
 
 # cpuRequest is the cpu resource request for the service
 cpuRequest: "50m"
@@ -29,8 +37,3 @@ memoryLimit: "1000Mi"
 minReplicaCount: 1
 # maxReplicaCount is the maximum number of replicas for the service
 maxReplicaCount: 3
-
-# autoscaleMessageCount is the number of messages that must be in the queue before autoscaling occurs
-autoscaleMessageCount: 10
-# servicebusPrefetchCount is the number of messages to prefetch from the service bus
-servicebusPrefetchCount: 10
