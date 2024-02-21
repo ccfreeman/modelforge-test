@@ -56,9 +56,13 @@ spec:
                 name: {{ .Values.namespace }}-secrets
                 key: sb--connection-string
           - name: RECEIVE_QUEUE_NAME
-            value: response-queue
+            value: {{ .Values.receiveQueueName }}
           - name: SERVICEBUS_PREFETCH_COUNT
-            value: "50"
+            value: "{{ .Values.servicebusPrefetchCount }}"
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
         ports:
         - containerPort: {{ .Values.servicePort }}
         startupProbe:

@@ -37,3 +37,9 @@ memoryLimit: "1000Mi"
 minReplicaCount: 1
 # maxReplicaCount is the maximum number of replicas for the service
 maxReplicaCount: 3
+
+# receiveQueueName is the name of the queue to receive messages from
+receiveQueueName: "response-queue"
+
+# servicebusPrefetchCount is the number of messages to prefetch from the service bus
+servicebusPrefetchCount: 10
