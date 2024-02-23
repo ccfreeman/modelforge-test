@@ -36,8 +36,8 @@ spec:
           - name: {{ .Values.namespace | upper }}_SB__CONNECTION
             valueFrom:
               secretKeyRef:
-                key: {{ .Values.namespace}}-sb--connection
-                name: app-{{ .Values.env }}-secrets
+                key: {{ .Values.namespace }}-sb--connection
+                name: app-{{ .Values.environment }}-secrets
           # - name: MODELFORGE__SERVICEBUS_CONN_STR
           #   valueFrom:
           #     secretKeyRef:

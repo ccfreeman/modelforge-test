@@ -6,8 +6,8 @@ appVersion: "0.0.0"
 # namespace the kubernetes namespace to deploy the chart to; this should usually be the modelforge namespace
 namespace: "datvlcn"
 
-# env is the environment the service is being deployed to; this should be one of 'qa', 'fsl', 'prd', or 'stg'
-env: "qa"
+# environment is the environment the service is being deployed to; this should be one of 'qa', 'fsl', 'prd', or 'stg'
+environment: "qa"
 
 # image is the container image to deploy
 image:
