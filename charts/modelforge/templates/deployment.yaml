@@ -33,11 +33,16 @@ spec:
             cpu: {{ .Values.cpuLimit }}
             memory: {{ .Values.memoryLimit }}
         env:
-          - name: MODELFORGE__SERVICEBUS_CONN_STR
+          - name: {{ .Values.namespace | upper }}_SB__CONNECTION
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.namespace }}-secrets
-                key: sb--connection-string
+                key: {{ .Values.namespace}}-sb--connection
+                name: app-{{ .Values.env }}-secrets
+          # - name: MODELFORGE__SERVICEBUS_CONN_STR
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: {{ .Values.namespace }}-secrets
+          #       key: sb--connection-string
           - name: MODELFORGE__APP_HOST
             value: "0.0.0.0"
           - name: MODELFORGE__APP_PORT
