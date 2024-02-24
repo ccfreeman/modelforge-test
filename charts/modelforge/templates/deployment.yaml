@@ -33,7 +33,7 @@ spec:
             cpu: {{ .Values.cpuLimit }}
             memory: {{ .Values.memoryLimit }}
         env:
-          - name: {{ .Values.namespace | upper }}_SB__CONNECTION
+          - name: MODELFORGE__SERVICEBUS_CONN_STR
             valueFrom:
               secretKeyRef:
                 key: {{ .Values.namespace }}-sb--connection
