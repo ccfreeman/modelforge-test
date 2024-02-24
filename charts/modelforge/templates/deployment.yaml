@@ -12,6 +12,7 @@ spec:
   template:
     metadata:
       labels:
+        aadpodidbinding: {{ .Values.namespace }}
 {{ include "modelforge.labels" . | indent 8 }}
     spec:
       tolerations:
